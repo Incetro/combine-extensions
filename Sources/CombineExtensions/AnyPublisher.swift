@@ -22,7 +22,7 @@ extension AnyPublisher {
 
     // MARK: - Useful
 
-    /// Static method Effect initializer
+    /// Static method AnyPublisher initializer
     /// - Parameter factory: "Create" callback closure
     /// - Returns: necessary publisher instance
     public static func create(
@@ -31,7 +31,7 @@ extension AnyPublisher {
         AnyPublisher(factory)
     }
 
-    /// A publisher that awaits subscription before running future to create a publisher for the new subscriber.
+    /// A publisher that awaits subscription before running future to create a publisher for a new subscriber.
     /// - Parameter attemptToFulfill: target fulfil
     /// - Returns: Defered publisher with future wraped with a type eraser.
     public static func deferred(

@@ -9,10 +9,10 @@ import Combine
 
 // MARK: - AnyPublisher
 
-extension AnyPublisher {
+public extension AnyPublisher {
 
-    /// Effect subscriber structure helper
-    public struct Subscriber {
+    /// AnyPublisher subscriber structure helper
+    struct Subscriber {
 
         // MARK: - Properties
 
@@ -62,29 +62,34 @@ extension AnyPublisher {
     /// sending the current status immediately, and then if the current status is `notDetermined` it
     /// can request authorization, and once a status is received it can send that back to the effect:
     ///
-    ///     Effect.run { subscriber in
+    ///     public final class MPMediaLibraryAuthorizationService {
     ///
-    ///         subscriber.send(MPMediaLibrary.authorizationStatus())
+    ///          public func authorize() -> AnyPublisher<MPMediaLibraryAuthorizationStatus, Never> {
+    ///                .run { subscriber in
     ///
-    ///         guard MPMediaLibrary.authorizationStatus() == .notDetermined else {
-    ///             subscriber.send(completion: .finished)
-    ///             return AnyCancellable {}
-    ///         }
+    ///                    subscriber.send(MPMediaLibrary.authorizationStatus())
     ///
-    ///         MPMediaLibrary.requestAuthorization { status in
-    ///             subscriber.send(status)
-    ///             subscriber.send(completion: .finished)
+    ///                    guard MPMediaLibrary.authorizationStatus() == .notDetermined else {
+    ///                        subscriber.send(completion: .finished)
+    ///                        return AnyCancellable {}
+    ///                    }
+    ///
+    ///                    MPMediaLibrary.requestAuthorization { status in
+    ///                        subscriber.send(status)
+    ///                        subscriber.send(completion: .finished)
+    ///                    }
+    ///                 return AnyCancellable {
+    ///                     /// Typically clean up resources that were created here, but this effect doesn't
+    ///                     /// have any
+    ///                 }
+    ///             }
     ///         }
-    ///         return AnyCancellable {
-    ///             /// Typically clean up resources that were created here, but this effect doesn't
-    ///             /// have any
-    ///         }
-    ///     }
+    ///      }
     ///
     /// - Parameter work: a closure that accepts a `Subscriber` value and returns a cancellable. When
     ///   the `Effect` is completed, the cancellable will be used to clean up any resources created
     ///   when the effect was started.
-    public static func run(
+    static func run(
         _ work: @escaping (AnyPublisher.Subscriber) -> Cancellable
     ) -> Self {
         AnyPublisher.create(work).eraseToAnyPublisher()

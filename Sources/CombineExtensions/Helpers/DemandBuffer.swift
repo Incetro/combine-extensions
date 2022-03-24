@@ -10,7 +10,7 @@ import Darwin
 
 // MARK: - DemandBuffer
 
-class DemandBuffer<S: Subscriber> {
+final class DemandBuffer<S: Subscriber> {
 
     // MARK: - Demand
 
