@@ -51,17 +51,6 @@ extension AnyPublisher {
         Future(attemptToFulfill).eraseToAnyPublisher()
     }
 
-    /// A publisher that immediatly emits an output to each subscriber just once, and then finishes.
-    /// - Parameter work: target work to execute
-    /// - Returns: Just publisher wraped with a type eraser.
-    public static func immediate(_ work: () -> Void) -> AnyPublisher {
-        work()
-        return Just<Output?>(nil)
-            .setFailureType(to: Failure.self)
-            .compactMap { $0 }
-            .eraseToAnyPublisher()
-    }
-
     /// A publisher created by applying the merge function to an arbitrary number of upstream publishers.
     /// - Parameter publishers: target publishers for merge
     /// - Returns: MergeMany publisher wraped with a type eraser.
@@ -69,6 +58,19 @@ extension AnyPublisher {
         Publishers
             .MergeMany(publishers)
             .eraseToAnyPublisher()
+    }
+
+    /// Creates a AnyPublisher that executes some work in the real world that doesn't need to feed data back
+    /// - Parameter work: target work to execute
+    /// - Returns: Deferred Just publisher wraped with a type eraser.
+    public static func immediate(_ work: @escaping () -> Void) -> AnyPublisher {
+        Deferred { () -> Publishers.CompactMap<Result<Output?, Failure>.Publisher, Output> in
+            work()
+            return Just<Output?>(nil)
+                .setFailureType(to: Failure.self)
+                .compactMap { $0 }
+        }
+        .eraseToAnyPublisher()
     }
 }
 
